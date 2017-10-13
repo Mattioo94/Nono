@@ -46,4 +46,6 @@
 
 ![przewody-polaczeniowe-zensko-meskie-10cm-40szt](https://user-images.githubusercontent.com/11798406/31552302-5df4fcbc-b037-11e7-8c5d-263d8bae4db9.jpg)
 
-## Schemat
+## Połączenia przewodów
+
+![przewody](https://user-images.githubusercontent.com/11798406/31554021-8d72c3b6-b03c-11e7-9f55-6dd30af5a508.png)
