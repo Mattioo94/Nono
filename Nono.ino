@@ -105,31 +105,25 @@ void loop(void)
 }
 
 //================================================================================================
-// JSON REQUEST - TRYING UPDATE VALUES OF PWM's
+// JSON REQUEST - TRYING UPDATE VALUES FROM JSON
 //================================================================================================
 
 void Configure(JsonObject& json)
 {
-  if(json.containsKey("Nono") && json["Nono"].is<JsonArray&>())
+  if(json.containsKey("M") && json["M"].is<JsonArray&>())
   { 
-    JsonArray& CONFIG = json["Nono"].asArray();
-    if(CONFIG.size() == 5 && CONFIG[0].is<int>() && CONFIG[1].is<int>() && CONFIG[2].is<int>() && CONFIG[3].is<int>() && CONFIG[4].is<int>())
+    JsonArray& CONFIG = json["M"].asArray();
+    if(CONFIG.size() == 3 && CONFIG[0].is<int>() && CONFIG[1].is<int>() && CONFIG[2].is<int>())
     {
       int LEFT = CONFIG[0];
       int RIGHT = CONFIG[1];
       int COURSE = CONFIG[2];
-
-      int SERVO_HORIZONTAL = CONFIG[3];
-      int SERVO_VERTICAL = CONFIG[4];
       
-      if(LEFT >= 0 && LEFT <= 1024 && RIGHT >= 0 && RIGHT <= 1024 && COURSE >= 0 && COURSE <= 1 && SERVO_HORIZONTAL >= 0 && SERVO_HORIZONTAL <= 180 && SERVO_VERTICAL >= 0 && SERVO_VERTICAL <= 180)
+      if(LEFT >= 0 && LEFT <= 1024 && RIGHT >= 0 && RIGHT <= 1024 && COURSE >= 0 && COURSE <= 1)
       {
         LEFT_VALUE = LEFT;
         RIGHT_VALUE = RIGHT;
         COURSE_VALUE = COURSE;
-
-        SERVO_HORIZONTAL_VALUE = SERVO_HORIZONTAL;
-        SERVO_VERTICAL_VALUE = SERVO_VERTICAL;
 
         digitalWrite(RIGHT_GPIO_PIN, COURSE_VALUE == 0 ? LOW : HIGH);
         digitalWrite(LEFT_GPIO_PIN, COURSE_VALUE == 0 ? LOW : HIGH);
@@ -137,10 +131,28 @@ void Configure(JsonObject& json)
         analogWrite(RIGHT_PWM_PIN, COURSE_VALUE == 0 ? LEFT_VALUE : 1024 - LEFT_VALUE);
         analogWrite(LEFT_PWM_PIN, COURSE_VALUE == 0 ? RIGHT_VALUE : 1024 - RIGHT_VALUE);
 
+        String json = "{\"Nono [M]\":[" + String(LEFT_VALUE) + ", " + String(RIGHT_VALUE) + ", " + String(COURSE_VALUE) + "]}";  
+        server.send( 200, "text/json", json );
+      }
+    }
+  }
+  else if(json.containsKey("S") && json["S"].is<JsonArray&>())
+  { 
+    JsonArray& CONFIG = json["S"].asArray();
+    if(CONFIG.size() == 2 && CONFIG[0].is<int>() && CONFIG[1].is<int>())
+    {
+      int SERVO_HORIZONTAL = CONFIG[0];
+      int SERVO_VERTICAL = CONFIG[1];
+      
+      if(SERVO_HORIZONTAL >= 0 && SERVO_HORIZONTAL <= 180 && SERVO_VERTICAL >= 0 && SERVO_VERTICAL <= 180)
+      {
+        SERVO_HORIZONTAL_VALUE = SERVO_HORIZONTAL;
+        SERVO_VERTICAL_VALUE = SERVO_VERTICAL;
+
         servoH.write(SERVO_HORIZONTAL_VALUE);
         servoV.write(SERVO_VERTICAL_VALUE);
 
-        String json = "{\"Nono\":[" + String(LEFT_VALUE) + ", " + String(RIGHT_VALUE) + ", " + String(COURSE_VALUE) + ", " + String(SERVO_HORIZONTAL_VALUE) + ", " + String(SERVO_VERTICAL_VALUE) + "]}";  
+        String json = "{\"Nono [S]\":[" + String(SERVO_HORIZONTAL_VALUE) + ", " + String(SERVO_VERTICAL_VALUE) + "]}";  
         server.send( 200, "text/json", json );
       }
     }
