@@ -9,6 +9,12 @@
 
 ![4wd-chassis-czterokolowe-podwozie-robota-dagu-](https://user-images.githubusercontent.com/11798406/31551813-fa370fc2-b035-11e7-9f36-f6e4c9a5acac.jpg)
 
+* Nazwa: Silnik elektryczny Motraxx X-Slot Tuning, skala 1:24 (x4)
+* Cena: 66,16 zł
+* Link: https://www.conrad.pl/p/silnik-elektryczny-motraxx-x-slot-tuning-skala-124-229020?utm_medium=Email&utm_source=Order_confirmation&utm_term=229020
+<br />
+
+![image](https://user-images.githubusercontent.com/11798406/36328475-8b30ae9a-1362-11e8-8a23-f0a8626a8489.jpg)
 
 * Nazwa: Moduł WiFi ESP8266 + NodeMCU v3
 * Cena: 39,90 zł
