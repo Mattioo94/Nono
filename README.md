@@ -24,12 +24,12 @@
 
 <br />
 
-* Nazwa: DRV8835 - dwukanałowy sterownik silników - moduł
-* Cena: 17,90 zł
-* Link: https://botland.com.pl/sterowniki-silnikow-dc/851-pololu-drv8835-dwukanalowy-sterownik-silnikow-11v12a.html?search_query=DRV8835+-+dwukanalowy+sterownik+silnikow+-+modul&results=12
+* Nazwa: L298N - dwukanałowy sterownik silników - moduł WB291111
+* Cena: 24,90 zł
+* Link: https://botland.com.pl/sterowniki-silnikow-moduly/8227-l298n-dwukanalowy-sterownik-silnikow-modul-wb291111.html?search_query=%09L298+-+dwukanalowy+sterownik+silnikow+-+modul&results=10
 <br />
 
-![pololu-drv8835-dwukanalowy-sterownik-silnikow-11v12a](https://user-images.githubusercontent.com/11798406/31552037-9b87dc26-b036-11e7-95b0-08c8e0cc8fb5.jpg)
+![l298n-dwukanalowy-sterownik-silnikow-modul-wb291111](https://user-images.githubusercontent.com/11798406/36329907-f3a82cfa-1367-11e8-8d12-70b9a4fa4ef2.jpg)
 
 * Nazwa: Serwo TowerPro SG-90 - micro (x2)
 * Cena: 12,90 zł
