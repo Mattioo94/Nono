@@ -19,10 +19,23 @@
 * Nazwa: Moduł WiFi ESP8266 + NodeMCU v3
 * Cena: 39,90 zł
 * Link: https://botland.com.pl/moduly-wifi/8241-modul-wifi-esp8266-nodemcu-v3.html?search_query=esp8266&results=55
+<br />
 
 ![modul-wifi-esp8266-nodemcu-v3](https://user-images.githubusercontent.com/11798406/31551954-64549ffa-b036-11e7-8512-f13b660467a2.jpg)
 
+* Nazwa: Akumulator SAMSUNG ICR 18650-22P (x4)
+* Cena: 48,00 zł
+* Link: https://www.tme.eu/pl/details/accu-18650-2.2p-hv/akumulatory/samsung/icr-18650-22p/
 <br />
+
+![9930](https://user-images.githubusercontent.com/11798406/36340414-adf7f224-13dc-11e8-97c8-e4cd1ee7b84f.jpg)
+
+* Nazwa: Pojemnik COMF BHC-18650-1P (x4)
+* Cena: 12,52 zł
+* Link: https://www.tme.eu/pl/details/bhc-18650-1p/baterie-pojemniki-i-uchwyty/comf/
+<br />
+
+![bat](https://user-images.githubusercontent.com/11798406/36340438-3216b496-13dd-11e8-84f3-09c9b23e935c.jpg)
 
 * Nazwa: L298N - dwukanałowy sterownik silników - moduł WB291111
 * Cena: 24,90 zł
