@@ -21,7 +21,7 @@
 * Link: https://botland.com.pl/moduly-wifi/8241-modul-wifi-esp8266-nodemcu-v3.html?search_query=esp8266&results=55
 <br />
 
-![modul-wifi-esp8266-nodemcu-v3](https://user-images.githubusercontent.com/11798406/31551954-64549ffa-b036-11e7-8512-f13b660467a2.jpg)
+![capture](https://user-images.githubusercontent.com/11798406/36346576-abb753f6-1440-11e8-991f-7ebd8a4e7ee2.PNG)
 
 * Nazwa: Akumulator SAMSUNG ICR 18650-22P (x4)
 * Cena: 48,00 zł
@@ -67,4 +67,4 @@
 
 ### Połączenia przewodów
 
-![przewody](https://user-images.githubusercontent.com/11798406/31554021-8d72c3b6-b03c-11e7-9f55-6dd30af5a508.png)
+![download](https://user-images.githubusercontent.com/11798406/36346580-c54d32fe-1440-11e8-8d02-fcc10ce7f97c.png)
