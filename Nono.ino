@@ -1,9 +1,6 @@
-
 #include <ESP8266WebServer.h>
-#include <ESP8266HTTPClient.h>
-#include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
-#include <Servo.h> 
+#include <Servo.h>
 
 //================================================================================================
 // NETWORK
@@ -18,59 +15,50 @@ ESP8266WebServer server(80);
 // SERVOS
 //================================================================================================
 
-Servo servoH; // HORIZONTAL
-Servo servoV; // VERTICAL
+Servo servo_H;
+Servo servo_V;
+
+int SERVO_H_PIN = 15;
+int SERVO_V_PIN = 13;
+
+int SERVO_H_VALUE = 90;
+int SERVO_V_VALUE = 90;
 
 //================================================================================================
-// GPIO's
+// MOTORS
 //================================================================================================
 
-int LEFT_PWM_PIN = 4;
-int LEFT_GPIO_PIN = 5;
+int MOTORS_L_IN1_PIN = 2;
+int MOTORS_L_IN2_PIN = 0;
+int MOTORS_L_PWM_PIN = 12;
 
-int RIGHT_PWM_PIN = 13;
-int RIGHT_GPIO_PIN = 15;
+int MOTORS_R_IN1_PIN = 4;
+int MOTORS_R_IN2_PIN = 5;
+int MOTORS_R_PWM_PIN = 14;
 
-int SERVO_HORIZONTAL_PIN = 14;
-int SERVO_VERTICAL_PIN = 16;
+//---------------------------------------------------------------
 
-//================================================================================================
-// CURRENT VALUES
-//================================================================================================
+int MOTORS_L_IN1_VAL = 0;
+int MOTORS_L_IN2_VAL = 0;
+int MOTORS_L_PWM_VAL = 0;
 
-int LEFT_VALUE = 0;
-int RIGHT_VALUE = 0;
-int COURSE_VALUE = 1;
-
-int SERVO_HORIZONTAL_VALUE = 90;
-int SERVO_VERTICAL_VALUE = 90;
+int MOTORS_R_IN1_VAL = 0;
+int MOTORS_R_IN2_VAL = 0;
+int MOTORS_R_PWM_VAL = 0;
 
 //================================================================================================
 // SETUP
 //================================================================================================
 
-void setup(void)
-{
-  pinMode(LEFT_PWM_PIN, OUTPUT);
-  pinMode(LEFT_GPIO_PIN, OUTPUT);
-  
-  pinMode(RIGHT_PWM_PIN, OUTPUT);
-  pinMode(RIGHT_GPIO_PIN, OUTPUT);
-  
-  digitalWrite(LEFT_PWM_PIN, LOW);
-  digitalWrite(LEFT_GPIO_PIN, LOW);
-  
-  digitalWrite(RIGHT_PWM_PIN, LOW);
-  digitalWrite(RIGHT_GPIO_PIN, LOW);
+void setup() {
 
-  servoH.attach(SERVO_HORIZONTAL_PIN);
-  servoV.attach(SERVO_VERTICAL_PIN);
+  servo_H.attach(SERVO_H_PIN);
+  servo_V.attach(SERVO_V_PIN);
 
-  //----------------------------------------------------------------------------------------------
+  updateState();
 
-  servoH.write(SERVO_HORIZONTAL_VALUE);
-  servoV.write(SERVO_VERTICAL_VALUE);
-  
+  //---------------------------------------------------------------
+
   server.on("/", HTTP_POST, []()
   {
     if(server.hasArg("plain"))
@@ -80,14 +68,23 @@ void setup(void)
 
       if(json.success())
       {
-        Configure(json);
+        if(isValid(json))
+        {
+          String json = "{\"Nono\":\"OK\"}";  
+          server.send( 200, "text/json", json );
+        }
+        else
+        {
+          String json = "{\"Nono\":\"BAD\"}";  
+          server.send( 404, "text/json", json );
+        }
       }
     }
   });
   
   server.begin();
 
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //---------------------------------------------------------------
 
   WiFi.softAP(ssid, password);
 
@@ -99,62 +96,50 @@ void setup(void)
 // LOOP
 //================================================================================================
 
-void loop(void)
-{
+void loop() {
   server.handleClient();
 }
 
 //================================================================================================
-// JSON REQUEST - TRYING UPDATE VALUES FROM JSON
+// VALIDATION
 //================================================================================================
 
-void Configure(JsonObject& json)
+bool isValid(JsonObject& json)
 {
-  if(json.containsKey("M") && json["M"].is<JsonArray&>())
+  if(json.containsKey("Nono") && json["Nono"].is<JsonArray&>())
   { 
-    JsonArray& CONFIG = json["M"].asArray();
-    if(CONFIG.size() == 3 && CONFIG[0].is<int>() && CONFIG[1].is<int>() && CONFIG[2].is<int>())
+    JsonArray& data = json["Nono"].asArray();
+    if(data.size() == 8 && data[0].is<int>() && data[1].is<int>() && data[2].is<int>() && data[3].is<int>() 
+    && data[4].is<int>() && data[5].is<int>() && data[6].is<int>() && data[7].is<int>())
     {
-      int LEFT = CONFIG[0];
-      int RIGHT = CONFIG[1];
-      int COURSE = CONFIG[2];
-      
-      if(LEFT >= 0 && LEFT <= 1024 && RIGHT >= 0 && RIGHT <= 1024 && COURSE >= 0 && COURSE <= 1)
-      {
-        LEFT_VALUE = LEFT;
-        RIGHT_VALUE = RIGHT;
-        COURSE_VALUE = COURSE;
-
-        digitalWrite(RIGHT_GPIO_PIN, COURSE_VALUE == 0 ? LOW : HIGH);
-        digitalWrite(LEFT_GPIO_PIN, COURSE_VALUE == 0 ? LOW : HIGH);
-
-        analogWrite(RIGHT_PWM_PIN, COURSE_VALUE == 0 ? LEFT_VALUE : 1024 - LEFT_VALUE);
-        analogWrite(LEFT_PWM_PIN, COURSE_VALUE == 0 ? RIGHT_VALUE : 1024 - RIGHT_VALUE);
-
-        String json = "{\"Nono [M]\":[" + String(LEFT_VALUE) + ", " + String(RIGHT_VALUE) + ", " + String(COURSE_VALUE) + "]}";  
-        server.send( 200, "text/json", json );
-      }
+      SERVO_H_VALUE = data[0];
+      SERVO_V_VALUE = data[1];
+      MOTORS_L_IN1_VAL = data[2];
+      MOTORS_L_IN2_VAL = data[3];
+      MOTORS_L_PWM_VAL = data[4];
+      MOTORS_R_IN1_VAL = data[5];
+      MOTORS_R_IN2_VAL = data[6];
+      MOTORS_R_PWM_VAL = data[7];
+      return true;
     }
   }
-  else if(json.containsKey("S") && json["S"].is<JsonArray&>())
-  { 
-    JsonArray& CONFIG = json["S"].asArray();
-    if(CONFIG.size() == 2 && CONFIG[0].is<int>() && CONFIG[1].is<int>())
-    {
-      int SERVO_HORIZONTAL = CONFIG[0];
-      int SERVO_VERTICAL = CONFIG[1];
-      
-      if(SERVO_HORIZONTAL >= 0 && SERVO_HORIZONTAL <= 180 && SERVO_VERTICAL >= 0 && SERVO_VERTICAL <= 180)
-      {
-        SERVO_HORIZONTAL_VALUE = SERVO_HORIZONTAL;
-        SERVO_VERTICAL_VALUE = SERVO_VERTICAL;
+  return false;
+}
 
-        servoH.write(SERVO_HORIZONTAL_VALUE);
-        servoV.write(SERVO_VERTICAL_VALUE);
+//================================================================================================
+// UPDATE STATE
+//================================================================================================
 
-        String json = "{\"Nono [S]\":[" + String(SERVO_HORIZONTAL_VALUE) + ", " + String(SERVO_VERTICAL_VALUE) + "]}";  
-        server.send( 200, "text/json", json );
-      }
-    }
-  }
+void updateState()
+{
+  analogWrite(MOTORS_L_PWM_PIN, MOTORS_L_PWM_VAL);
+  analogWrite(MOTORS_R_PWM_PIN, MOTORS_R_PWM_VAL);
+
+  digitalWrite(MOTORS_L_IN1_PIN, MOTORS_L_IN1_VAL == 0 ? LOW : HIGH);
+  digitalWrite(MOTORS_L_IN2_PIN, MOTORS_L_IN2_VAL == 0 ? LOW : HIGH);
+  digitalWrite(MOTORS_R_IN1_PIN, MOTORS_R_IN1_VAL == 0 ? LOW : HIGH);
+  digitalWrite(MOTORS_R_IN2_PIN, MOTORS_R_IN2_VAL == 0 ? LOW : HIGH);
+
+  servo_H.write(SERVO_H_VALUE);
+  servo_V.write(SERVO_V_VALUE);
 }
