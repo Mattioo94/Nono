@@ -1,5 +1,6 @@
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
+#include <Ticker.h>
 #include <Servo.h>
 
 //================================================================================================
@@ -47,10 +48,33 @@ int MOTORS_R_IN2_VAL = 0;
 int MOTORS_R_PWM_VAL = 0;
 
 //================================================================================================
+// TIMER
+//================================================================================================
+
+Ticker ticker;
+volatile unsigned long tim = millis();
+
+void intervalFunc(){
+  if(millis() - tim > 50) {
+    stopFast();
+    tim = millis();
+  }
+}
+
+//================================================================================================
 // SETUP
 //================================================================================================
 
 void setup() {
+
+  pinMode(MOTORS_L_IN1_PIN, OUTPUT);
+  pinMode(MOTORS_L_IN2_PIN, OUTPUT);
+  pinMode(MOTORS_L_PWM_PIN, OUTPUT);
+  pinMode(MOTORS_R_IN1_PIN, OUTPUT);
+  pinMode(MOTORS_R_IN2_PIN, OUTPUT);
+  pinMode(MOTORS_R_PWM_PIN, OUTPUT);
+
+  //---------------------------------------------------------------
 
   servo_H.attach(SERVO_H_PIN);
   servo_V.attach(SERVO_V_PIN);
@@ -72,6 +96,7 @@ void setup() {
         {
           String json = "{\"Nono\":\"OK\"}";  
           server.send( 200, "text/json", json );
+          tim = millis();
         }
         else
         {
@@ -90,6 +115,10 @@ void setup() {
 
   Serial.begin(115200);
   Serial.println("\n\nWiFi signal strength (RSSI): " + String(WiFi.RSSI()) + " dBm");
+
+  //---------------------------------------------------------------
+
+  ticker.attach(0.001,intervalFunc);
 }
 
 //================================================================================================
@@ -108,7 +137,7 @@ bool isValid(JsonObject& json)
 {
   if(json.containsKey("Nono") && json["Nono"].is<JsonArray&>())
   { 
-    JsonArray& data = json["Nono"].asArray();
+    JsonArray& data = json["Nono"].as<JsonArray&>();
     if(data.size() == 8 && data[0].is<int>() && data[1].is<int>() && data[2].is<int>() && data[3].is<int>() 
     && data[4].is<int>() && data[5].is<int>() && data[6].is<int>() && data[7].is<int>())
     {
@@ -132,14 +161,48 @@ bool isValid(JsonObject& json)
 
 void updateState()
 {
-  analogWrite(MOTORS_L_PWM_PIN, MOTORS_L_PWM_VAL);
-  analogWrite(MOTORS_R_PWM_PIN, MOTORS_R_PWM_VAL);
-
   digitalWrite(MOTORS_L_IN1_PIN, MOTORS_L_IN1_VAL == 0 ? LOW : HIGH);
   digitalWrite(MOTORS_L_IN2_PIN, MOTORS_L_IN2_VAL == 0 ? LOW : HIGH);
   digitalWrite(MOTORS_R_IN1_PIN, MOTORS_R_IN1_VAL == 0 ? LOW : HIGH);
   digitalWrite(MOTORS_R_IN2_PIN, MOTORS_R_IN2_VAL == 0 ? LOW : HIGH);
 
+  analogWrite(MOTORS_L_PWM_PIN, MOTORS_L_PWM_VAL);
+  analogWrite(MOTORS_R_PWM_PIN, MOTORS_R_PWM_VAL);
+
   servo_H.write(SERVO_H_VALUE);
   servo_V.write(SERVO_V_VALUE);
+}
+
+//================================================================================================
+// FAST STOP
+//================================================================================================
+
+void stopFast()
+{
+  MOTORS_L_IN1_VAL = 1;
+  MOTORS_L_IN2_VAL = 1;
+  MOTORS_L_PWM_VAL = 1;
+
+  MOTORS_R_IN1_VAL = 1;
+  MOTORS_R_IN2_VAL = 1;
+  MOTORS_R_PWM_VAL = 1;
+
+  updateState();
+}
+
+//================================================================================================
+// SOFT STOP
+//================================================================================================
+
+void stopSoft()
+{
+  MOTORS_L_IN1_VAL = 1;
+  MOTORS_L_IN2_VAL = 1;
+  MOTORS_L_PWM_VAL = 0;
+
+  MOTORS_R_IN1_VAL = 1;
+  MOTORS_R_IN2_VAL = 1;
+  MOTORS_R_PWM_VAL = 0;
+
+  updateState();
 }
