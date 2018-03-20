@@ -55,7 +55,7 @@ Ticker ticker;
 volatile unsigned long tim = millis();
 
 void intervalFunc(){
-  if(millis() - tim > 50) {
+  if(millis() - tim > 150) {
     stopFast();
     tim = millis();
   }
@@ -94,6 +94,7 @@ void setup() {
       {
         if(isValid(json))
         {
+          updateState();
           String json = "{\"Nono\":\"OK\"}";  
           server.send( 200, "text/json", json );
           tim = millis();
@@ -113,7 +114,7 @@ void setup() {
 
   WiFi.softAP(ssid, password);
 
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("\n\nWiFi signal strength (RSSI): " + String(WiFi.RSSI()) + " dBm");
 
   //---------------------------------------------------------------
@@ -181,11 +182,11 @@ void stopFast()
 {
   MOTORS_L_IN1_VAL = 1;
   MOTORS_L_IN2_VAL = 1;
-  MOTORS_L_PWM_VAL = 1;
+  MOTORS_L_PWM_VAL = 1024;
 
   MOTORS_R_IN1_VAL = 1;
   MOTORS_R_IN2_VAL = 1;
-  MOTORS_R_PWM_VAL = 1;
+  MOTORS_R_PWM_VAL = 1024;
 
   updateState();
 }
